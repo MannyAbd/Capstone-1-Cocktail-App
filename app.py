@@ -5,14 +5,31 @@ import requests
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'hi'
-
 api_key = 1
 BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php"
 
-def get_search(s):
+##############################SEARCH BY NAME################################
+
+def get_name(s):
     res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 's': s})
     search = res.json()
     name = search["drinks"][0]
+    return {"name": name}
+
+###########################SEARCH BY FIRST LETTER############################
+
+def get_letter(f):
+    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': f})
+    search = res.json()
+    name = search["drinks"][0]
+    return {"name": name}
+
+###########################SEARCH BY INGREDIENT############################
+
+def get_ingredient(i):
+    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'i': i})
+    search = res.json()
+    name = search["ingredients"][0]
     return {"name": name}
 
 ##################################ROUTES####################################
@@ -22,7 +39,23 @@ def homepage():
     return render_template('index.html')
 
 @app.route('/search')
-def searched():
+def search_name():
+    return render_template('search_drink.html')
+
+@app.route('/searched/name')
+def searched_name():
     drink = request.args['name']
-    drink_name = get_search(drink)
-    return render_template('index.html', drink_name=drink_name )
+    drink_name = get_name(drink)
+    return render_template('search_drink.html', drink_name=drink_name)
+
+# @app.route('/searched/letter')
+# def searched_letter():
+#     drink = request.args['letter']
+#     drink_letter = get_letter(drink)
+#     return render_template('search_by_letter.html', drink_letter=drink_letter)
+
+@app.route('/searched/ingredient')
+def searched_ingredient():
+    drink = request.args['name']
+    drink_ingredient = get_ingredient(drink)
+    return render_template('search_drink.html', drink_ingredient=drink_ingredient)
