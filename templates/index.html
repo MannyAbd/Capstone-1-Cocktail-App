@@ -7,6 +7,15 @@
     <title>Capstone</title>
 </head>
 <body>
-    <p>hi</p>
+ {%if drink_name%}
+    <div>
+        <p>{{drink_name}}</p>
+    </div>
+    {%endif%}
+    <form action="/search">
+        <input id="name" name="name"autofocus/>
+        <button>Go!</button>
+    </form>
+
 </body>
 </html>
