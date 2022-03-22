@@ -52,23 +52,22 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.Text, nullable=False,  unique=True)
-
     password = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False, unique=True)
 
-    
+    def __repr__(self):
+        return f"<User #{self.id}: {self.username}, {self.email}>"
+
     @classmethod
-    def register(cls, username, pwd):
+    def register(cls, username, pwd, email):
         """Register user w/hashed password & return user."""
 
-        hashed = bcrypt.generate_password_hash(pwd)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
+        hashed_pwd = bcrypt.generate_password_hash(pwd).decode('UTF-8')
 
         # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8)
+        return cls(username=username, password=hashed_pwd, email=email)
 
     @classmethod
     def authenticate(cls, username, pwd):

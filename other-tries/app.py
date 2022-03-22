@@ -1,14 +1,14 @@
 
 from flask import Flask, request, redirect, render_template, flash, session
 import requests
-from models import connect_db, db, User
-from forms import UserForm, LoginForm
+from models import connect_db, db, User, Ingredient, Filt, Drink, Favorite
+from forms import UserForm
 
 from sqlalchemy.exc import IntegrityError
 
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///cocktail_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///capstone1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config['SECRET_KEY'] = 'hi'
@@ -71,6 +71,7 @@ def searched_ingredient():
     return render_template('search_drink.html', drink_ingredient=drink_ingredient)
 
 ##############################login/register###############################
+
 """Following Springboard tutorial"""
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -79,39 +80,35 @@ def register_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        email=form.email.data
-        new_user = User.register(username, password, email=email)
+        new_user = User.register(username, password)
 
         db.session.add(new_user)
         try:
             db.session.commit()
         except IntegrityError:
             form.username.errors.append('Username taken.  Please pick another')
-            form.email.errors.append('Email already in use.  Use another')
             return render_template('register.html', form=form)
         session['user_id'] = new_user.id
         flash('Welcome! Successfully Created Your Account!', "success")
         return redirect('/')
     return render_template('register.html', form=form)
 
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    """Handle user login."""
-
-    form = LoginForm()
-
+@app.route('/login', methods=['GET', 'POST'])
+def login_user():
+    form = UserForm()
     if form.validate_on_submit():
-        user = User.authenticate(form.username.data,
-                                 form.password.data)
+        username = form.username.data
+        password = form.password.data
 
+        user = User.authenticate(username, password)
         if user:
-            session["user_id"] = user.id
-            flash(f"Hello, {user.username}!", "success")
-            return redirect("/")
+            flash(f"Welcome Back, {user.username}!", "primary")
+            session['user_id'] = user.id
+            return redirect('/')
+        else:
+            form.username.errors = ['Invalid username/password.']
 
-        flash("Invalid credentials.", 'danger')
-
-    return render_template('/login.html', form=form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/logout')

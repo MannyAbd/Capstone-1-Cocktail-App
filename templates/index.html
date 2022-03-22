@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Search a Drink</h1>
+<a class="nav-link" href="/search"><h1>Search a Drink</h1></a>
+{% if session['user_id'] %}
+
+<a class="nav-link" href="/favorites"><h2>Go to Favs</h2></a>
+
+{% else %}
+
+<h1>No favs for you. <a class="nav-link" href="/login">Login first</a> or <a class="nav-link" href="/register">Register</a></h1>
+
+{% endif %}
 
 {% endblock %}
