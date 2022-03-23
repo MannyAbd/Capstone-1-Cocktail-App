@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for i in drinks %}
+<h2> Cocktail Name:{{i.strDrink}} </h2>
+
+    Ingredients required:
+    <ul>
+        {% if i.strIngredient1%}
+        <li> {{i.strIngredient1}}</li>
+        {% endif %}
+        {% if i.strIngredient2 %}
+        <li> {{i.strIngredient2}} </li>
+        {% endif %}
+        {% if i.strIngredient3 %}
+        <li> {{i.strIngredient3}} </li>
+        {% endif %}
+        {% if i.strIngredient4 %}
+        <li> {{i.strIngredient4}} </li>
+        {% endif %}
+        {% if i.strIngredient5 %}
+        <li> {{i.strIngredient5}} </li>
+        {% endif %}
+    </ul>
+ Instructions: {{i.strInstructions}}
+
+{% endfor %}
+{% endblock content %}

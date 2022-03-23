@@ -1,7 +1,9 @@
 
+import re
 from flask import Flask, request, redirect, render_template, flash, session
 import requests
-from models import connect_db, db, User
+import json
+from models import connect_db, db, User, Favorite
 from forms import UserForm, LoginForm
 
 from sqlalchemy.exc import IntegrityError
@@ -18,57 +20,74 @@ connect_db(app)
 api_key = 1
 BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php"
 
-##############################SEARCH BY NAME################################
-
-def get_name(s):
-    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 's': s})
-    search = res.json()
-    name = search["drinks"][0]
-    return {"name": name}
-
-###########################SEARCH BY FIRST LETTER############################
-
-def get_letter(f):
-    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': f})
-    search = res.json()
-    name = search["drinks"][0]
-    return {"name": name}
-
-###########################SEARCH BY INGREDIENT############################
-
-def get_ingredient(i):
-    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'i': i})
-    search = res.json()
-    name = search["ingredients"][0]
-    return {"name": name}
-
-###############################SEARCH ROUTES##################################
+###############################SEARCH ROUTES################################
 
 @app.route('/')
 def homepage():
     return render_template('index.html')
 
-@app.route('/search')
-def search_name():
-    return render_template('search_drink.html')
-
-@app.route('/searched/name')
+##############################SEARCH BY NAME################################
+ 
+@app.route('/search',methods = ['POST'])
 def searched_name():
-    drink = request.args['name']
-    drink_name = get_name(drink)
-    return render_template('search_drink.html', drink_name=drink_name)
+    """
+    referenced Cocktail-Dictionary
+    Takes data from form to search for drink lists.
 
-# @app.route('/searched/letter')
-# def searched_letter():
-#     drink = request.args['letter']
-#     drink_letter = get_letter(drink)
-#     return render_template('search_by_letter.html', drink_letter=drink_letter)
+    """
+    if request.method == 'POST':
+        drink = request.form['search-name']
+        res = requests.get(f'{BASE_URL}?s={drink}')
+        val = res.json()
+        all_drinks = val["drinks"]
+        return render_template("cocktail_data.html",all_drinks=all_drinks,drink=drink)
 
-@app.route('/searched/ingredient')
+@app.route('/search/<type>',methods=['GET', 'POST'])
+def drink_list(type):
+    drink = type
+    res = requests.get(f'{BASE_URL}?s={drink}')
+    val = res.json()   
+    drinks = val["drinks"]
+    return render_template("list_drink.html", drinks=drinks,drink=drink)
+
+
+###########################SEARCH BY FIRST LETTER##########################
+
+@app.route('/search/l/',methods = ['POST'])
+def searched_letter():
+    if request.method == 'POST':
+        letter = request.form['search-letter']
+        res = requests.get(f'{BASE_URL}?f={letter}')
+        val = res.json()
+        all_drinks = val["drinks"]
+        return render_template("cocktail_data.html",all_drinks=all_drinks,letter=letter)
+
+@app.route('/search/l/<l>',methods=['GET', 'POST'])
+def letter_list(l):
+    letter = l
+    res = requests.get(f'{BASE_URL}?f={letter}')
+    val = res.json()   
+    drinks = val["drinks"]
+    return render_template("list_drink.html", drinks=drinks,letter=letter)
+
+
+###########################SEARCH BY INGREDIENT############################
+@app.route('/search/i/',methods = ['POST'])
 def searched_ingredient():
-    drink = request.args['name']
-    drink_ingredient = get_ingredient(drink)
-    return render_template('search_drink.html', drink_ingredient=drink_ingredient)
+    if request.method == 'POST':
+        ingredient = request.form['search-ingredient']
+        res = requests.get(f'{BASE_URL}?i={ingredient}')
+        val = res.json()
+        all_i = val["ingredients"]
+        return render_template("search_ingredient.html",all_i=all_i,ingredient=ingredient)
+
+@app.route('/search/i/<type>',methods=['GET', 'POST'])
+def get_ingredient(type):
+    ingredient = type
+    res = requests.get(f'{BASE_URL}?f={ingredient}')
+    val = res.json()   
+    ingre_list = val["ingredients"]
+    return render_template("search_ingredient.html", ingre_list=ingre_list,ingredient=ingredient)
 
 ##############################login/register###############################
 """Following Springboard tutorial"""
@@ -129,3 +148,5 @@ def show_favorites():
         return redirect('/login')
     
     return render_template("favorites.html")
+
+

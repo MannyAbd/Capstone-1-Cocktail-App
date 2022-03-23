@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for i in all_drinks %}
+    <ul>
+    <li><a href="{{url_for('drink_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
+    </ul>
+
+<!-- <img src="{{i.strDrinkThumb}}" width="30" height="30" /> -->
+  
+    {% endfor %}
+{% endblock content %}
