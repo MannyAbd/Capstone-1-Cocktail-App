@@ -6,8 +6,18 @@
     <ul>
     <li><a href="{{url_for('drink_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
     </ul>
-
-<!-- <img src="{{i.strDrinkThumb}}" width="30" height="30" /> -->
-  
     {% endfor %}
+    {% for i in drinks %}
+    <ul>
+    <li><a href="{{url_for('letter_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
+    </ul>
+    {% endfor %}
+    {% for i in all_i %}
+    <ul>
+        <li><a href="{{url_for('get_ingredient',type = i.strIngredient)}}">{{i.strIngredient}}</a></li>
+    </ul>
+    {% endfor %}
+
+  
+    
 {% endblock content %}

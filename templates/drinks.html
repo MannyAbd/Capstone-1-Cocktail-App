@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<ul>
+    {% for drink in drinks %}
+    <li><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
+    {% endfor %}
+</ul>
+
+<p><a class="btn btn-primary" href="/drinks/add">Add a drink to your favs</a></p>
+
+
+{% endblock %}

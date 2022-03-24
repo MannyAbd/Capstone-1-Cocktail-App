@@ -3,4 +3,15 @@
 {% block content %}
 <h1>Wow Drinkys</h1>
 
+<ul>
+    {% for favlist in favlist %}
+    <li>
+        <a href="/favlists/{{ favlist.id }}">{{ favlist.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<p><a class="btn btn-primary" href="/favlists/add">Add a playlist</a></p>
+<p><a class="btn btn-primary" href="/drinks/add">Add a drink to your favs</a></p>
+
 {% endblock %}
