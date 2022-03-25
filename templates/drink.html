@@ -2,15 +2,12 @@
 
 {% block content %}
 
-<div class="jumbotron">
-    <h1>{{ drink.name }}</h1>
-
-</div>
+<h1>{{ drink.name }}</h1>
 
 <ul>
-    {% for playlist in drink.favlist %}
+    {% for list in drink.favlist %}
     <li>
-        <a href="/playlists/{{ fav_list.id }}">{{ favlist.name }}</a>
+        <a href="/favoritelists/{{ favlist.id }}">{{ favlist.name }}</a>
     </li>
     {% endfor %}
 </ul>

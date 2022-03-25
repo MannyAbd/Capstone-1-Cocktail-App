@@ -14,11 +14,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="/">Search for a drink</a></li>
-            <li class="nav-item"><a class="nav-link" href="/drinks">drink list</a></li>
-
+            
             {% if session['user_id'] %}
-
-            <li class="nav-item"><a class="nav-link" href="/favorites">Favs</a></li>
+            <li class="nav-item"><a class="nav-link" href="/drinks">drink list</a></li>
             <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
             
             {% else %}

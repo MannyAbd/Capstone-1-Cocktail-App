@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-
-
+<h1>Wow Drinkys</h1>
 <ul>
+    
     {% for drink in drinks %}
     <li><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
+    {% if session['user_id'] %}
+    <h5 class="card-title text-info">
+    <form action="/drinks/{{drinks.id}}" method="POST">
+    <button class="btn btn-sm btn-danger"><i class="fas fa-trash">x</i></button>
+    </form>
+    </h5>
+    {% endif %}
     {% endfor %}
 </ul>
 

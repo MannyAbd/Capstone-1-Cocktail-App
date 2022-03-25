@@ -6,12 +6,12 @@
 <ul>
     {% for favlist in favlist %}
     <li>
-        <a href="/favlists/{{ favlist.id }}">{{ favlist.name }}</a>
+        <a href="/favoritelists/{{ favlist.id }}">{{ favlist.name }}</a>
     </li>
     {% endfor %}
 </ul>
 
-<p><a class="btn btn-primary" href="/favlists/add">Add a playlist</a></p>
+<p><a class="btn btn-primary" href="/favoritelists/add">Add a favorite list </a></p>
 <p><a class="btn btn-primary" href="/drinks/add">Add a drink to your favs</a></p>
 
 {% endblock %}

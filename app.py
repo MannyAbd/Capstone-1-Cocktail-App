@@ -1,8 +1,7 @@
 from flask import Flask, request, redirect, render_template, flash, session
 import requests
-import json
-from models import connect_db, db, User, Favorite, Favoritelist, Drink
-from forms import UserForm, LoginForm, AddToFavorites,FavlistForm, DrinkForm
+from models import connect_db, db, User, Drink
+from forms import UserForm, LoginForm, DrinkForm
 
 from sqlalchemy.exc import IntegrityError
 
@@ -22,7 +21,7 @@ BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php"
 
 @app.route('/')
 def homepage():
-    return render_template('index.html')
+    return render_template('/homepage/index.html')
 
 ##############################SEARCH BY NAME################################
  
@@ -48,7 +47,6 @@ def drink_list(type):
     drinks = val["drinks"]
     return render_template("list_drink.html", drinks=drinks,drink=drink)
 
-
 ###########################SEARCH BY FIRST LETTER##########################
 
 @app.route('/search/l/',methods = ['POST'])
@@ -67,7 +65,6 @@ def letter_list(l):
     val = res.json()   
     drinks = val["drinks"]
     return render_template("list_drink.html", drinks=drinks,letter=letter)
-
 
 ###########################SEARCH BY INGREDIENT############################
 @app.route('/search/ingredient',methods = ['POST'])
@@ -109,7 +106,7 @@ def register_user():
         session['user_id'] = new_user.id
         flash('Welcome! Successfully Created Your Account!', "success")
         return redirect('/')
-    return render_template('register.html', form=form)
+    return render_template('/user/register.html', form=form)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -120,16 +117,14 @@ def login():
     if form.validate_on_submit():
         user = User.authenticate(form.username.data,
                                  form.password.data)
-
         if user:
             session["user_id"] = user.id
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
 
-        flash("Invalid credentials.", 'danger')
+        form.username.errors = ['Invalid username/password.']
 
-    return render_template('/login.html', form=form)
-
+    return render_template('/user/login.html', form=form)
 
 @app.route('/logout')
 def logout_user():
@@ -139,44 +134,14 @@ def logout_user():
 
 ##############################loggedIn Route###############################
 
-
-@app.route("/favorites")
-def show_all_favlists():
-    
-    favlist = Favoritelist.query.all()
-    return render_template("favorites.html", favlist=favlist)
-
-
-@app.route("/favlists/<int:favlist_id>")
-def show_favlist(favlist_id):
-
-    favlist = Favoritelist.query.get_or_404(favlist_id)
-    return render_template("favorite.html", favlist=favlist)
- 
-@app.route("/favlists/add", methods=["GET", "POST"])
-def add_favlist():
- 
-    form = FavlistForm()
-
-    if form.validate_on_submit():
-        name = form.name.data
-        description = form.description.data
-        new_favlist = Favoritelist(name=name,description=description)
-        db.session.add(new_favlist)
-        db.session.commit()
-        flash(f"Added favlist: {name}")
-        return redirect('/favlists/add')
-    else:
-        return render_template("new_favlist.html", form=form)
-
-
 @app.route("/drinks")
 def show_all_drink():
     """Show list of drink."""
-
+    if "user_id" not in session:
+        flash("Please login first!", "danger")
+        return redirect('/login')
     drinks = Drink.query.all()
     return render_template("drinks.html", drinks=drinks)
-
 
 @app.route("/drinks/<int:drink_id>")
 def show_drink(drink_id):
@@ -184,44 +149,34 @@ def show_drink(drink_id):
     drink = Drink.query.get_or_404(drink_id)
     return render_template("drink.html", drink=drink)
 
-
 @app.route("/drinks/add", methods=["GET", "POST"])
 def add_drink():
 
     form = DrinkForm()
-
+    if "user_id" not in session:
+        flash("Please login first!", "danger")
+        return redirect('/login')
     if form.validate_on_submit():
         name = form.name.data
         category = form.category.data
         drink = Drink(name=name,category=category)
         db.session.add(drink)
         db.session.commit()
-        flash(f"Added '{name}' category: {category}")
+        flash(f"Added '{name}'")
         return redirect('/drinks/add')
     else:
         return render_template("add_drink.html", form=form)
 
-@app.route("/favlists/<int:favlist_id>/add-drink", methods=["GET", "POST"])
-def add_drink_to_favlist(favlist_id):
-
-    favlist = Favoritelist.query.get_or_404(favlist_id)
-    form = AddToFavorites()
-    curr_on_favlist = [d.id for d in favlist]
-    form.song.choices = (db.session.query(Drink.id, Drink.name).filter(Drink.id.notin_(curr_on_favlist)).all())
-
-    if form.validate_on_submit():
-
-        favlist_drink = Favorite(song_id=form.song.data, favlist_id=favlist_id)
-        db.session.add(favlist_drink)
+@app.route('/drinks/<int:drink_id>')
+def show_favorites(drink_id):
+    if "user_id" not in session:
+        flash("Please login first!", "danger")
+        return redirect('/login')
+    drink = Drink.query.get_or_404(drink_id)
+    if drink.user_id == session['user_id']:
+        db.session.delete(drink)
         db.session.commit()
-        return redirect(f"/favlists/{favlist_id}")
-
-    return render_template("add_drink_list.html",
-                             favlist=favlist,
-                             form=form)
-
-# @app.route('/favorites')
-# def show_favorites(fav_id):
-#     if "user_id" not in session:
-#         flash("Please login first!", "danger")
-#         return redirect('/login')
+        flash(f"Deleted {drink}")
+        return redirect("/drinks")
+    flash("You don't have permission to do that!", "danger")
+    return redirect('/drinks')
