@@ -20,4 +20,14 @@ class DrinkForm(FlaskForm):
     
     name = StringField("Drink Name", validators=[InputRequired()])
     category = StringField("category:", validators=[Optional()])
-
+    instructions = StringField("instructions:", validators=[Optional()])
+    ingredient1 = StringField("ingredient1:", validators=[Optional()])
+    ingredient2 = StringField("ingredient2:", validators=[Optional()])
+    ingredient3 = StringField("ingredient3:", validators=[Optional()])
+    ingredient4 = StringField("ingredient4:", validators=[Optional()])
+    ingredient5 = StringField("ingredient5:", validators=[Optional()])
+    ingredient6 = StringField("ingredient6:", validators=[Optional()])
+    ingredient7 = StringField("ingredient7:", validators=[Optional()])
+    ingredient8 = StringField("ingredient8:", validators=[Optional()])
+    ingredient9 = StringField("ingredient9:", validators=[Optional()])
+    ingredient10 = StringField("ingredient10:", validators=[Optional()])

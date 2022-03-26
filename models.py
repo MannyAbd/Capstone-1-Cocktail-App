@@ -1,8 +1,16 @@
+# import json
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+
+# json_data = {   'id': self.id,
+#                 'name': self.name,
+#                 'category': self.category,}
+# obj = json.loads(json_data)
+# print(obj)
+
 
 class Drink(db.Model):
     __tablename__ = "drinks"
@@ -10,9 +18,42 @@ class Drink(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     category = db.Column(db.Text, nullable=True)
+    instructions = db.Column(db.Text)
+    ingredient1 = db.Column(db.Text)
+    ingredient2 = db.Column(db.Text)
+    ingredient3 = db.Column(db.Text)
+    ingredient4 = db.Column(db.Text)
+    ingredient5 = db.Column(db.Text)
+    ingredient6 = db.Column(db.Text)
+    ingredient7 = db.Column(db.Text)
+    ingredient8 = db.Column(db.Text)
+    ingredient9 = db.Column(db.Text)
+    ingredient10 = db.Column(db.Text)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"))
+    user = db.relationship('User', backref="tweets")
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'category': self.category,
+            'instructions': self.instructions,
+            'ingredient1' : self.ingredient1,
+            'ingredient2' : self.ingredient2,
+            'ingredient3' : self.ingredient3,
+            'ingredient4' : self.ingredient4,
+            'ingredient5' : self.ingredient5,
+            'ingredient6' : self.ingredient6,
+            'ingredient7' : self.ingredient7,
+            'ingredient8' : self.ingredient8,
+            'ingredient9' : self.ingredient9,
+            'ingredient10' : self.ingredient10,
+
+        }
 
     def __repr__(self):
-        return f"<drink name={self.name} category={self.category}>"
+        return f"<drink name={self.name} category={self.category}             instructions = {self.instructions} ingredient1 = {self.ingredient1}ingredient2 = {self.ingredient2} ingredient3 = {self.ingredient3}ingredient4 = {self.ingredient4} ingredient5 = {self.ingredient5}ingredient6 = {self.ingredient6} ingredient7 = {self.ingredient7}ingredient8 = {self.ingredient8} ingredient9 = {self.ingredient9}ingredient10 = {self.ingredient10} ingredient11 = {self.ingredient11}ingredient12 = {self.ingredient12} ingredient13 = {self.ingredient13}ingredient14 = {self.ingredient14}ingredient15 = {self.ingredient15}>"
 
 class User(db.Model):
 
@@ -22,9 +63,11 @@ class User(db.Model):
     username = db.Column(db.Text, nullable=False,  unique=True)
     password = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, nullable=False, unique=True)
-
+    # drinks = db.relationship('drinks')
+    
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
+
 
     @classmethod
     def register(cls, username, pwd, email):
@@ -54,3 +97,5 @@ class User(db.Model):
 def connect_db(app):
     db.app = app
     db.init_app(app)
+
+

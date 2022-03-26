@@ -3,13 +3,26 @@
 {% block content %}
 
 <h1>{{ drink.name }}</h1>
+    <p>Category: {{drink.category}}</p>
 
+<p>Ingredients required:</p>
 <ul>
-    {% for list in drink.favlist %}
-    <li>
-        <a href="/favoritelists/{{ favlist.id }}">{{ favlist.name }}</a>
-    </li>
-    {% endfor %}
+    {% if drink.ingredient1%}
+    <li> {{drink.ingredient1}}</li>
+    {% endif %}
+    {% if drink.ingredient2%}
+    <li> {{drink.ingredient2}} </li>
+    {% endif %}
+    {% if drink.ingredient3 %}
+    <li> {{drink.ingredient3}} </li>
+    {% endif %}
+    {% if drink.ingredient4 %}
+    <li> {{drink.ingredient4}} </li>
+    {% endif %}
+    {% if drink.ingredient5 %}
+    <li> {{drink.ingredient5}} </li>
+    {% endif %}
 </ul>
+Instructions: {{drink.instructions}}
 
 {% endblock %}

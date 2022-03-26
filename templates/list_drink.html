@@ -2,9 +2,9 @@
 {% block content %}
 
 {% for i in drinks %}
-<h2> Cocktail Name:{{i.strDrink}} </h2>
+<h2> Cocktail Name: {{i.strDrink}} <button >Add to Favs</button> </h2>
 
-    Ingredients required:
+    <p>Ingredients required:</p>
     <ul>
         {% if i.strIngredient1%}
         <li> {{i.strIngredient1}}</li>

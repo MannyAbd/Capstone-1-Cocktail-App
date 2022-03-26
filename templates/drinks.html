@@ -1,22 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Wow Drinkys</h1>
-<ul>
-    
-    {% for drink in drinks %}
-    <li><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
-    {% if session['user_id'] %}
-    <h5 class="card-title text-info">
-    <form action="/drinks/{{drinks.id}}" method="POST">
-    <button class="btn btn-sm btn-danger"><i class="fas fa-trash">x</i></button>
-    </form>
-    </h5>
-    {% endif %}
-    {% endfor %}
-</ul>
+
+<div class="container">
+
+    <h1 class="text-center display-3">drink List</h1>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <ul class="list-group-item  justify-content-between align-items-center" class="list-group">
+
+                    {% for drink in drinks %}
+                    {% if session['user_id'] == drink.user.id %}
+                    <li ><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
+                        <form style="display:inline;" action="/drinks/{{drink.id}}/delete" method="POST">
+                            <button class="btn btn-sm btn-danger " data-id="{{drink.id}}">X</button>
+                        </form>
+
+
+                    {% endif %}
+                                        <!-- {%if drink.name != drink.name %}
+                                        
+                                        <h2>There's nothing in your list</h2>
+                                        
+                                        {% endif %} -->
+                    {% endfor %}
+                    
+                </ul>
+            </div>
+        </div>
+
+</div>
 
 <p><a class="btn btn-primary" href="/drinks/add">Add a drink to your favs</a></p>
+
+
+                    
 
 
 {% endblock %}
