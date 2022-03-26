@@ -59,6 +59,12 @@ def searched_letter():
         all_drinks = val["drinks"]
         return render_template("cocktail_data.html",all_drinks=all_drinks,letter=letter)
 
+@app.route('/drinks/a')
+def drink_a():
+    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': 'a'})
+    val = res.json()
+    all_drinks = val["drinks"]
+    return render_template("by_letter.html",all_drinks=all_drinks)
 
 @app.route('/search/l/<l>',methods=['GET', 'POST'])
 def letter_list(l):
