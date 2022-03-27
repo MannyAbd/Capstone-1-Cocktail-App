@@ -1,28 +1,29 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<h1>{{ drink.name }}</h1>
-    <p>Category: {{drink.category}}</p>
+{% for i in drinks %}
+
+<h2> Cocktail Name: {{i.strDrink}} </h2>
 
 <p>Ingredients required:</p>
 <ul>
-    {% if drink.ingredient1%}
-    <li> {{drink.ingredient1}}</li>
+    {% if i.strIngredient1%}
+    <li> {{i.strIngredient1}}</li>
     {% endif %}
-    {% if drink.ingredient2%}
-    <li> {{drink.ingredient2}} </li>
+    {% if i.strIngredient2 %}
+    <li> {{i.strIngredient2}} </li>
     {% endif %}
-    {% if drink.ingredient3 %}
-    <li> {{drink.ingredient3}} </li>
+    {% if i.strIngredient3 %}
+    <li> {{i.strIngredient3}} </li>
     {% endif %}
-    {% if drink.ingredient4 %}
-    <li> {{drink.ingredient4}} </li>
+    {% if i.strIngredient4 %}
+    <li> {{i.strIngredient4}} </li>
     {% endif %}
-    {% if drink.ingredient5 %}
-    <li> {{drink.ingredient5}} </li>
+    {% if i.strIngredient5 %}
+    <li> {{i.strIngredient5}} </li>
     {% endif %}
 </ul>
-Instructions: {{drink.instructions}}
+Instructions: {{i.strInstructions}}
 
-{% endblock %}
+{% endfor %}
+{% endblock content %}

@@ -6,7 +6,15 @@
         <input type="text" name="search-name"  />
         <input type="submit" value="Search" >
     </form>
-
+<h2>search by first letter</h2>
+        <form method="post" action="{{ url_for('searched_letter')}}">
+            <input type="text" name="search-letter" />
+            <input type="submit" value="Search">
+        </form>
+<h2>search by ingredient</h2>
+<form method="post" action="{{ url_for('searched_ingredient')}}">
+    <input type="text" name="search-ingredient" />
+    <input type="submit" value="Search">
 </form>
 {% if session['user_id'] %}
 
@@ -16,17 +24,6 @@
 
 <h1>No favs for you. <a class="nav-link" href="/login">Login first</a>
 
-
-
 {% endif %}
 
 {% endblock %}
-<!-- <h2>search by first letter</h2>
-        <form method="post" action="{{ url_for('searched_letter')}}">
-            <input type="text" name="search-letter" />
-            <input type="submit" value="Search">
-        </form>
-<h2>search by ingredient</h2>
-<form method="post" action="{{ url_for('searched_ingredient')}}">
-    <input type="text" name="search-ingredient" />
-    <input type="submit" value="Search"> -->
