@@ -4,10 +4,16 @@
 
     {% for i in all_drinks %}
     <ul>
-    <li><a href="{{url_for('drink_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
+    <li ><a id="drinkToAdd" href="{{url_for('drink_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
     </ul>
     {% endfor %}
-    {% for i in drinks %}
+
+    {% endfor %}
+
+  
+    
+{% endblock content %}
+    <!-- {% for i in drinks %}
     <ul>
     <li><a href="{{url_for('letter_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
     </ul>
@@ -15,9 +21,4 @@
     {% for i in all_i %}
     <ul>
         <li><a href="{{url_for('get_ingredient',type = i.strIngredient)}}">{{i.strIngredient}}</a></li>
-    </ul>
-    {% endfor %}
-
-  
-    
-{% endblock content %}
+    </ul> -->

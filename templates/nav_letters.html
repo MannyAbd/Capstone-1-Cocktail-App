@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h2>Navigate drinks by letters</h2>
+
+{%for l in alph%}
+<li>
+    <a href="/letters/{{l}}">{{l}} drinks</a>
+</li>
+{% endfor %}
+
+
+{% if session['user_id'] %}
+
+<a class="nav-link" href="/drinks">
+    <h2>Go to Favs</h2>
+</a>
+
+{% else %}
+
+<h1>No favs for you. <a class="nav-link" href="/login">Login first</a>
+
+
+
+    {% endif %}
+
+    {% endblock %}

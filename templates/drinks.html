@@ -11,7 +11,7 @@
 
                     {% for drink in drinks %}
                     {% if session['user_id'] == drink.user.id %}
-                    <li ><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
+                    <li id="drinky"><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></li>
                         <form style="display:inline;" action="/drinks/{{drink.id}}/delete" method="POST">
                             <button class="btn btn-sm btn-danger " data-id="{{drink.id}}">X</button>
                         </form>

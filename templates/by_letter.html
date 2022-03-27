@@ -1,19 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{all_drinks}}
 
 
-{% if session['user_id'] %}
+<div class="container">
 
-<a class="nav-link" href="/drinks"><h2>Go to Favs</h2></a>
+    <h1 class="text-center display-3">drink List</h1>
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <ul class="list-group-item  justify-content-between align-items-center" class="list-group">
+                
+                {% for i in drinks %}
+                <ul>
+                    <li id="drinkToAdd"><a id="drinkToAdd" href="{{url_for('drink_list',type = i.strDrink)}}">{{i.strDrink}}</a></li>
+                </ul>
+                {% endfor %}
+                
 
-{% else %}
+            </ul>
+        </div>
+    </div>
 
-<h1>No favs for you. <a class="nav-link" href="/login">Login first</a>
+</div>
 
+<p><a class="btn btn-primary" href="/drinks/add">Add a drink to your favs</a></p>
 
-
-{% endif %}
 
 {% endblock %}
+<!-- {{url_for('drinkys',type = i.strDrink)}} -->
+<!-- {% for i in drinks %}
+<ul>
+    <li><a href="/search/ABC">{{i.strDrink}}</a></li>
+</ul>
+{% endfor %} -->

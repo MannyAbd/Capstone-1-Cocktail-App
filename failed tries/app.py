@@ -126,3 +126,41 @@ def show_favorites():
         return redirect('/login')
     
     return render_template("favorites.html")
+
+    ###########################SEARCH BY FIRST LETTER##########################
+
+# @app.route('/search/l/',methods = ['POST'])
+# def searched_letter():
+#     if request.method == 'POST':
+#         letter = request.form['search-letter']
+#         res = requests.get(f'{BASE_URL}?f={letter}')
+#         val = res.json()
+#         all_drinks = val["drinks"]
+#         return render_template("cocktail_data.html",all_drinks=all_drinks,letter=letter)
+
+# @app.route('/search/l/<l>',methods=['GET', 'POST'])
+# def letter_list(l):
+#     letter = l
+#     res = requests.get(f'{BASE_URL}?f={letter}')
+#     val = res.json()   
+#     drinks = val["drinks"]
+#     return render_template("list_drink.html", drinks=drinks,letter=letter)
+
+###########################SEARCH BY INGREDIENT############################
+
+# @app.route('/search/ingredient',methods = ['POST'])
+# def searched_ingredient():
+#     if request.method == 'POST':
+#         ingredient = request.form['search-ingredient']
+#         res = requests.get(f'{BASE_URL}?i={ingredient}')
+#         val = res.json()
+#         all_i = val["ingredients"]
+#         return render_template("cocktail_data.html",all_i=all_i,ingredient=ingredient)
+
+# @app.route('/search/ingredient/<type>',methods=['GET', 'POST'])
+# def get_ingredient(type):
+#     ingredient = type
+#     res = requests.get(f'{BASE_URL}?f={ingredient}')
+#     val = res.json()   
+#     ingre_list = val["ingredients"]
+#     return render_template("search_ingredient.html", ingre_list=ingre_list,type=type)
