@@ -13,6 +13,7 @@
                 {% for i in drinks %}
                 <ul>
                     <li id="drinkToAdd"><a href="{{url_for('drink_up',type = i.strDrink)}}">{{i.strDrink}}</a></li>
+                    <button id="add">add to fav</button>
                 </ul>
                 {% endfor %}
                 

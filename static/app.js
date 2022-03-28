@@ -5,11 +5,13 @@ const drinkToAdd = document.querySelector('#drinkToAdd');
 
 // append drinkToAdd to drinkyList
 //eventlistener btn
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+  btn.addEventListener("click", pressIt);
+    //   drinkToAdd.innerHTML
+    // drinkyList.append(drinkToAdd)
+    
   
-    drinkyList.append(drinkToAdd);
-console.log('hi')
-form.reset();
-});
+function pressIt(){
+alert("Hello World!");
+}
+
 
