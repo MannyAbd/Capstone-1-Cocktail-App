@@ -1,5 +1,4 @@
 from flask import Flask, request, redirect, render_template, flash, session, jsonify
-
 import requests
 from models import connect_db, db, User, Drink
 from forms import UserForm, LoginForm, DrinkForm
@@ -22,12 +21,12 @@ BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php"
 
 @app.route('/')
 def homepage():
-    drinks = Drink.query.all()
-    return render_template('index.html', drinks=drinks)
+   
+    return render_template('index.html')
 
 ##############################SEARCH BY NAME################################
- 
-@app.route('/search/name',methods = ['POST'])
+
+@app.route('/search',methods = ['POST'])
 def searched_name():
     """
     referenced Cocktail-Dictionary
@@ -41,7 +40,7 @@ def searched_name():
         all_drinks = val["drinks"]
         return render_template("cocktail_data.html",all_drinks=all_drinks,drink=drink)
 
-@app.route('/search/name/<type>',methods=['GET', 'POST'])
+@app.route('/search/<type>',methods=['GET', 'POST'])
 def drink_list(type):
     drink = type
     res = requests.get(f'{BASE_URL}?s={drink}')
@@ -50,42 +49,27 @@ def drink_list(type):
     return render_template("list_drink.html", drinks=drinks,drink=drink)
 
 ###########################SEARCH BY FIRST LETTER##########################
+alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']
 
-@app.route('/search/l/',methods = ['POST'])
-def searched_letter():
-    if request.method == 'POST':
-        letter = request.form['search-letter']
-        res = requests.get(f'{BASE_URL}?f={letter}')
-        val = res.json()
-        all_drinks = val["drinks"]
-        return render_template("cocktail_data.html",all_drinks=all_drinks,letter=letter)
+@app.route('/letters')
+def nav_letters():
+    return render_template('nav_letters.html',alph=alph)
 
-@app.route('/search/l/<l>',methods=['GET', 'POST'])
-def letter_list(l):
-    letter = l
-    res = requests.get(f'{BASE_URL}?f={letter}')
+@app.route('/letters/<l>')
+def drink_a(l):
+    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': {l}})
+    val = res.json()
+    drinks = val["drinks"]
+    return render_template("by_letter.html",drinks=drinks, alph=alph)
+
+@app.route('/searched/<type>',methods=['GET', 'POST'])
+def drink_up(type):
+    drink = type
+    res = requests.get(f'{BASE_URL}?s={drink}')
     val = res.json()   
     drinks = val["drinks"]
-    return render_template("list_drink.html", drinks=drinks,letter=letter)
+    return render_template("drink.html", drinks=drinks,drink=drink)
 
-###########################SEARCH BY INGREDIENT############################
-
-@app.route('/search/ingredient',methods = ['POST'])
-def searched_ingredient():
-    if request.method == 'POST':
-        ingredient = request.form['search-ingredient']
-        res = requests.get(f'{BASE_URL}?i={ingredient}')
-        val = res.json()
-        all_i = val["ingredients"]
-        return render_template("cocktail_data.html",all_i=all_i,ingredient=ingredient)
-
-@app.route('/search/ingredient/<type>',methods=['GET', 'POST'])
-def get_ingredient(type):
-    ingredient = type
-    res = requests.get(f'{BASE_URL}?f={ingredient}')
-    val = res.json()   
-    ingre_list = val["ingredients"]
-    return render_template("search_ingredient.html", ingre_list=ingre_list,type=type)
 
 ##############################login/register###############################
 """Following Springboard tutorial"""
@@ -204,8 +188,6 @@ def remove_drink(drink_id):
     db.session.commit()
     flash(f"Deleted {drink.name}")
     return redirect("/drinks")
-    # flash("You don't have permission to do that!", "danger")
-    # return redirect('/drinks')
 
 ###############################JSON################################
 @app.route('/api/drinks')
@@ -241,11 +223,7 @@ def update_drink(id):
     drink.ingredient8 = request.json.get('ingredient8', drink.ingredient8)
     drink.ingredient9 = request.json.get('ingredient9', drink.ingredient9)
     drink.ingredient10 = request.json.get('ingredient10', drink.ingredient10)
-    drink.ingredient11 = request.json.get('ingredient11', drink.ingredient11)
-    drink.ingredient12 = request.json.get('ingredient12', drink.ingredient12)
-    drink.ingredient13 = request.json.get('ingredient13', drink.ingredient13)
-    drink.ingredient14 = request.json.get('ingredient14', drink.ingredient14)
-    drink.ingredient15 = request.json.get('ingredient15', drink.ingredient15)
+
     db.session.commit()
     return jsonify(drink=drink.serialize())
 
