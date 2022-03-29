@@ -2,6 +2,9 @@ from flask import Flask, request, redirect, render_template, flash, session, jso
 import requests
 from models import connect_db, db, User, Drink
 from forms import UserForm, LoginForm, DrinkForm
+import os
+
+# use secret key in production or default to our dev one
 
 from sqlalchemy.exc import IntegrityError
 
@@ -10,7 +13,7 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///cocktail_db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_ECHO"] = True
-app.config['SECRET_KEY'] = 'hi'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp233337')
 
 connect_db(app)
 
