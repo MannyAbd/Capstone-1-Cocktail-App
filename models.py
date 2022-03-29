@@ -5,13 +5,6 @@ from flask_bcrypt import Bcrypt
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
-# json_data = {   'id': self.id,
-#                 'name': self.name,
-#                 'category': self.category,}
-# obj = json.loads(json_data)
-# print(obj)
-
-
 class Drink(db.Model):
     __tablename__ = "drinks"
 

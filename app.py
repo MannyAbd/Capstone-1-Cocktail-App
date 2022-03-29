@@ -35,10 +35,13 @@ def searched_name():
     """
     if request.method == 'POST':
         drink = request.form['search-name']
-        res = requests.get(f'{BASE_URL}?s={drink}')
-        val = res.json()
-        all_drinks = val["drinks"]
-        return render_template("cocktail_data.html",all_drinks=all_drinks,drink=drink)
+        try:
+            res = requests.get(f'{BASE_URL}?s={drink}')
+            val = res.json()
+            all_drinks = val["drinks"]
+            return render_template("cocktail_data.html",all_drinks=all_drinks,drink=drink)
+        except:
+            return " <h1> Oops.. We don't have that cocktail </h1>"
 
 @app.route('/search/<type>',methods=['GET', 'POST'])
 def drink_list(type):
@@ -46,7 +49,7 @@ def drink_list(type):
     res = requests.get(f'{BASE_URL}?s={drink}')
     val = res.json()   
     drinks = val["drinks"]
-    return render_template("list_drink.html", drinks=drinks,drink=drink)
+    return render_template("search_drink.html", drinks=drinks,drink=drink)
 
 ###########################SEARCH BY FIRST LETTER##########################
 alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']
@@ -68,7 +71,7 @@ def drink_up(type):
     res = requests.get(f'{BASE_URL}?s={drink}')
     val = res.json()   
     drinks = val["drinks"]
-    return render_template("drink.html", drinks=drinks,drink=drink)
+    return render_template("letter_drink.html", drinks=drinks,drink=drink)
 
 
 ##############################login/register###############################
@@ -146,7 +149,6 @@ def add_drink():
 
     if form.validate_on_submit():
         name = form.name.data
-        category = form.category.data
         instructions = form.instructions.data
         ingredient1 = form.ingredient1.data
         ingredient2 = form.ingredient2.data
@@ -159,7 +161,7 @@ def add_drink():
         ingredient9 = form.ingredient9.data
         ingredient10 = form.ingredient10.data
 
-        drink = Drink(name=name,category=category, instructions=instructions, ingredient1 = ingredient1,
+        drink = Drink(name=name, instructions=instructions, ingredient1 = ingredient1,
         ingredient2 = ingredient2,
         ingredient3 = ingredient3,
         ingredient4 = ingredient4,

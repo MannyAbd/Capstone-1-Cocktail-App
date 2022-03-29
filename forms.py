@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, Length, InputRequired, Optional
+from wtforms.widgets import TextArea
 
 
 class UserForm(FlaskForm):
@@ -19,8 +20,7 @@ class LoginForm(FlaskForm):
 class DrinkForm(FlaskForm):
     
     name = StringField("Drink Name", validators=[InputRequired()])
-    category = StringField("category:", validators=[Optional()])
-    instructions = StringField("instructions:", validators=[Optional()])
+    instructions = StringField("instructions:", validators=[Optional()],widget=TextArea())
     ingredient1 = StringField("ingredient1:", validators=[Optional()])
     ingredient2 = StringField("ingredient2:", validators=[Optional()])
     ingredient3 = StringField("ingredient3:", validators=[Optional()])
