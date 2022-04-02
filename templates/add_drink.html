@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<div class="container" style="margin-top: 2em">
 
 {% for msg in get_flashed_messages() %}
 <div>{{ msg }}</div>
@@ -24,4 +24,5 @@
     {% endfor %}
     <button type="submit">Submit</button>
 </form>
+</div>
 {% endblock %}
