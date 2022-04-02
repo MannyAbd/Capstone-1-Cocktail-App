@@ -94,8 +94,13 @@ def drink_up(type):
     res = requests.get(f'{BASE_URL}?s={drink}')
     val = res.json()   
     drinks = val["drinks"]
-    return render_template("letter_drink.html", drinks=drinks,drink=drink)
+    # if "user_id" in session:
+    #     db.session.add(drinks)
+    #     db.session.commit()
+    #     flash(f"Added '{drinks}'")
+    #     return redirect('/drinks')
 
+    return render_template("letter_drink.html", drinks=drinks,drink=drink)
 
 ##############################login/register###############################
 """Following Springboard tutorial"""
