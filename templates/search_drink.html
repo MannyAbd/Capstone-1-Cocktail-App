@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container" style="margin-top: 2em">
+<div id="drinkToAdd" class="container" style="margin-top: 2em">
+   {{dan}}
+        <!-- <button id="add">get</button> -->
 {% for i in drinks %}
 <h2> Cocktail Name: {{i.strDrink}}  </h2>
 
@@ -26,4 +28,5 @@
 
 {% endfor %}
 </div>
+<!-- <li id="drinky"></li> -->
 {% endblock content %}

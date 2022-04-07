@@ -2,10 +2,10 @@
 {% block content %}
 <div class="container" style="margin-top: 2em">
 
-
+{% if drink.name%}
 <h2> Cocktail Name: {{drink.name}} </h2>
-
 <p>Ingredients required:</p>
+{% endif %}
 <ul>
     {% if drink.ingredient1%}
     <li> {{drink.ingredient1}}</li>
@@ -23,7 +23,37 @@
     <li> {{drink.ingredient5}} </li>
     {% endif %}
 </ul>
+{% if drink.instructions%}
 Instructions: {{drink.instructions}}
+{% endif %}
+
+
+{% if drinks.name%}
+<h2> Cocktail Name: {{drinks.name}} </h2>
+<p>Ingredients required:</p>
+{% endif %}
+<ul>
+    {% if drinks.ingredient1%}
+    <li> {{drinks.ingredient1}}</li>
+    {% endif %}
+    {% if drinks.ingredient2 %}
+    <li> {{drinks.ingredient2}} </li>
+    {% endif %}
+    {% if drinks.ingredient3 %}
+    <li> {{drinks.ingredient3}} </li>
+    {% endif %}
+    {% if drinks.ingredient4 %}
+    <li> {{drinks.ingredient4}} </li>
+    {% endif %}
+    {% if drinks.ingredient5 %}
+    <li> {{drinks.ingredient5}} </li>
+    {% endif %}
+</ul>
+{% if drinks.instructions%}
+Instructions: {{drinks.instructions}}
+{% endif %}
+
 
 </div>
+
 {% endblock content %}

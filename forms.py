@@ -17,6 +17,12 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
 
+class UpdateUserForm(FlaskForm):
+    """Form for updating username and email address"""
+
+    username = StringField('Username')
+    email = StringField('E-mail', validators=[Email()])
+    
 class DrinkForm(FlaskForm):
     
     name = StringField("Drink Name", validators=[InputRequired()])

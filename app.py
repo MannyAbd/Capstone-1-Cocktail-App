@@ -1,35 +1,24 @@
-from flask import Flask, request, redirect, render_template, flash, session, jsonify
+from flask import Flask, request, redirect, render_template, flash, session, jsonify, g
 import requests
-from models import connect_db, db, User, Drink
-from forms import UserForm, LoginForm, DrinkForm
+from models import connect_db, db, User, Drink, AddDrink
+from forms import UserForm, LoginForm, DrinkForm, UpdateUserForm
 import os
-
-# use secret key in production or default to our dev one
-
+import re
 from sqlalchemy.exc import IntegrityError
 
+app = Flask(__name__)
 
-
-# app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'sqlite:///cocktail_db'
-
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config["SQLALCHEMY_ECHO"] = True
 # app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
 
-# import os
-
-# use secret key in production or default to our dev one
-
-# from sqlalchemy.exc import IntegrityError
-
-import re
 # app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///cocktail_db"
 # uri = os.getenv("DATABASE_URL")  # or other relevant config var
 # if uri.startswith("postgres://"):
 #     uri = uri.replace("postgres://", "postgresql://", 1)
 # rest of connection code using the connection string `uri`
-app = Flask(__name__)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'postgresql:///cocktail_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -37,14 +26,51 @@ app.config["SQLALCHEMY_ECHO"] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
 connect_db(app)
 
+
+CURR_USER_KEY = "curr_user"
 api_key = 1
 BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php"
 
+
+##############################Helper Functions###############################
+
+def get_name(s):
+    if s:
+        res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 's': s})
+        return res.json()['drinks']
+    else:
+        return None
+
+def get_drink_id(id):
+    if id:
+        res = requests.get(f"{BASE_URL}lookup.php?i={id}")
+        return res.json()['drinks'][0]
+    else:
+        return None
+
+def handle_add_drink(user_id, drink_id):
+    try:
+        added = AddDrink(
+            user_id=user_id, drink_id=drink_id)
+        db.session.add(added)
+        db.session.commit()
+
+    except IntegrityError:
+        db.session.rollback()
+        pass
+
+def generate_recs(added):
+    """Following cocktail-curator: Takes dicts of from user page and finds recently added"""
+    lst = []
+    if added != None:
+        for i in added:
+            lst.append(i['strIngredient1'])
+    else:
+        return None
 ###############################SEARCH ROUTES################################
 
 @app.route('/')
 def homepage():
-   
     return render_template('index.html')
 
 ##############################SEARCH BY NAME################################
@@ -74,6 +100,7 @@ def drink_list(type):
     drinks = val["drinks"]
     return render_template("search_drink.html", drinks=drinks,drink=drink)
 
+
 ###########################SEARCH BY FIRST LETTER##########################
 alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']
 
@@ -94,16 +121,23 @@ def drink_up(type):
     res = requests.get(f'{BASE_URL}?s={drink}')
     val = res.json()   
     drinks = val["drinks"]
-    # if "user_id" in session:
-    #     db.session.add(drinks)
-    #     db.session.commit()
-    #     flash(f"Added '{drinks}'")
-    #     return redirect('/drinks')
 
     return render_template("letter_drink.html", drinks=drinks,drink=drink)
 
 ##############################login/register###############################
 """Following Springboard tutorial"""
+
+@app.before_request
+def add_user_to_g():
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+    else:
+        g.user = None
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
@@ -122,7 +156,8 @@ def register_user():
         except IntegrityError:
             form.username.errors.append('Username or email already in use.  Please pick another')
             return render_template('register.html', form=form)
-        session['user_id'] = new_user.id
+
+        do_login(new_user)
         flash('Welcome! Successfully Created Your Account!', "success")
         return redirect('/')
     return render_template('register.html', form=form)
@@ -136,7 +171,7 @@ def login():
         user = User.authenticate(form.username.data,
                                  form.password.data)
         if user:
-            session["user_id"] = user.id
+            do_login(user)
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
 
@@ -149,24 +184,76 @@ def logout_user():
     session.pop('user_id')
     flash("Goodbye!", "info")
     return redirect('/')
+##############################User Route###############################
+
+@app.route('/users/<int:user_id>')
+def show_user_page(user_id):
+    if not g.user:
+        flash("Please login to view your page", "danger")
+        return redirect("/")
+    user = User.query.get_or_404(user_id)
+    adds = add_fav(user_id)
+    recs = generate_recs(adds)
+    return render_template('/users/show.html',user=user, adds=adds,recs=recs)
+
+@app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
+def update_user(user_id):
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    form = UpdateUserForm(obj=user)
+
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        db.session.commit()
+        flash(f"User {user_id} updated", "success")
+        return redirect(f'/users/{user.id}')
+
+    else:
+        return render_template("/users/edit.html", form=form)
+
+@app.route('/users/fav')
+def show_fav():
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
+    adds = add_fav(g.user.id)
+    return render_template('/users/fav.html', adds=adds)
 
 ##############################loggedIn Route###############################
 
 @app.route("/drinks")
 def show_all_drink():
     """Show list of drink."""
-    if "user_id" not in session:
+    if not g.user:
         flash("Please login first!", "danger")
-        return redirect('/login')
+        return redirect("/")
     drinks = Drink.query.filter(Drink.user).all()
     return render_template("drinks.html", drinks=drinks)
 
-@app.route("/drinks/<int:drink_id>")
-def show_drink(drink_id):
+# @app.route("/drinks/<int:drink_id>")
+# def show_drink(drink_id):
+#     if not g.user:
+#         flash("Please login first!", "danger")
+#         return redirect("/")
+#     handle_add_drink(g.user.id, drink_id)
+#     drinks = get_drink_by_id(drink_id)
+#     drink = Drink.query.get_or_404(drink_id)
+#     return render_template("drink.html", drink=drink, drinks=drinks)
 
-    drink = Drink.query.get_or_404(drink_id)
-    return render_template("drink.html", drink=drink)
-
+@ app.route('/drinks/<int:drink_id>')
+def show_drink_page(drink_id):
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
+    handle_add_drink(g.user.id, drink_id)
+    user = User.query.get_or_404(g.user.id)
+    drink = get_drink_by_id(drink_id)
+    return render_template('/drinks/show.html',user=user,drink=drink)
+    
 @app.route("/drinks/add", methods=["GET", "POST"])
 def add_drink():
 
@@ -264,3 +351,43 @@ def delete_todo(id):
     db.session.delete(drink)
     db.session.commit()
     return jsonify(message="deleted")
+
+
+@app.route('/users/fav')
+def show_fav():
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect('/login')
+    adds = add_fav(g.user.id)
+    return render_template('saved-drinks.html', adds=adds)
+
+def add_fav(usr_id):
+    user = User.query.get_or_404(usr_id)
+    fav = AddDrink.query.filter(
+        AddDrink.user_id == user.id).all()
+    if len(fav) == 0:
+        return None
+    else:
+        # lst = [drink.id for drink in user.fav]
+        lst = []
+        for drink in fav:
+            resp = get_drink_by_id(drink.drink_id)
+            lst.insert(0, resp)
+        return lst
+        
+def get_drink_by_id(idDrink):
+    if idDrink:
+        resp = requests.get(f"http://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={idDrink}")
+        return resp.json()['drinks'][0]
+    else:
+        return None
+
+def handle_add_drink(usr_id, drk_id):
+    try:
+        add_drink = AddDrink(
+            user_id=usr_id, drink_id=drk_id)
+        db.session.add(add_drink)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        pass

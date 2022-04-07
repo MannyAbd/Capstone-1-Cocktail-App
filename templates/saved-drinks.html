@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if recents %}
+<h1 class="display-3">Hi, {{ g.user.username }}</h1>
+<div class="row text-center">
+    {% for drink in recents %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link " id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
+                aria-controls="home" aria-selected="true"><a href="/drinks/{{drink.id}}">{{ drink.name }} </a></button>
+        </li>
+    {% endfor %}
+</div>
+
+{% else %}
+
+    <h1 class="display-3">Hi, {{ g.user.username }}</h1>
+    <p class="lead">no drinks yet </p>
+
+{% endif %}
+{% endblock %}
