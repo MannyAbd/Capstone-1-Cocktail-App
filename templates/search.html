@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if res %}
+<h1 class="display-3">Search Results for "{{ term }}"</h1>
+<div class="row text-center">
+    {% for drink in res %}
+    <div class="col-lg-2 col-md-4 mb-2">
+        <div class="card h-80">
+            <img class="card-img-top" src="{{ drink.strDrinkThumb }}" alt="">
+            <div class="card-body">
+                <h4 class="card-title">{{ drink.strDrink }}</h4>
+            </div>
+            <div class="card-footer">
+                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary">Add to fav</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<header class="jumbotron my-4">
+    <h1 class="display-3">Search Results</h1>
+    <p class="lead">Oops, it lookes like there weren't any results for "{{ term }}". Please try another search term</p>
+    {% if not g.user %}
+    <a href="/users/login" class="btn btn-primary">Log in to start mixing...</a>
+    {% else %}
+    <a href="/users/{{ g.user.id }}" class="btn btn-primary">See your saved recipes</a>
+    <a href="/users/new-drink" class="btn btn-success">Create Your Own</a>
+    {% endif %}
+</header>
+<datalist id="datalistOptions">
+    <option value="Margarita">
+    <option value="Sex on the Beach">
+    <option value="Bloody Mary">
+    <option value="New York Sour">
+    <option value="Limeade">
+</datalist>
+
+{% endif %}
+
+
+
+{% endblock %}

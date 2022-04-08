@@ -1,19 +1,24 @@
-let btn = document.querySelector("#add");
-const drinkyList = document.querySelector("#drinky");
-const drinkToAdd = document.querySelector("#drinkToAdd");
+// let btn = document.querySelector("#add");
+// const drinkyList = document.querySelector("#drinky");
+// const drinkToAdd = document.querySelector("#drinkToAdd");
 
-// append drinkToAdd to drinkyList
-//eventlistener btn
+// // append drinkToAdd to drinkyList
+// //eventlistener btn
 
-document.addEventListener("DOMContentLoaded", function (event) {
+// document.addEventListener("DOMContentLoaded", function (event) {
   
-  function pressIt() {
-    add = drinkToAdd.innerText;
-    drinkyList.append(add);
-  }
-  if(drinkToAdd){
-    btn.addEventListener("click", pressIt);
-  }
+//   function pressIt() {
+//     add = drinkToAdd.innerText;
+//     drinkyList.append(add);
+//   }
+//   if(drinkToAdd){
+//     btn.addEventListener("click", pressIt);
+//   }
   
+// });
+
+$(document).ready(function () {
+  $("button-addon2").click(function () {
+    $(".container").toggleClass("active");
+  });
 });
-

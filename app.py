@@ -8,13 +8,12 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'sqlite:///cocktail_db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["SQLALCHEMY_ECHO"] = True
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'sqlite:///cocktail_db'
+# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-#     'DATABASE_URL', 'postgresql:///cocktail_db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'postgresql:///cocktail_db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
@@ -102,11 +101,10 @@ def homepage():
 @app.route('/search')
 def search():
     term = request.args["search-name"]
-    try:
-        res = get_name(term)
-        return render_template('/index.html',term=term,res=res)
-    except:
-        return " <h1> Oops.. We don't have that cocktail </h1>"
+
+    res = get_name(term)
+    return render_template('/search.html',term=term,res=res)
+
 
 ###########################SEARCH BY FIRST LETTER##########################
 alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']

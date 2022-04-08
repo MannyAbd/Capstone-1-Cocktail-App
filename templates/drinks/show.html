@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1 id="drink" class="display-3" data="{{drink.idDrink}}">{{ drink.strDrink }}</h1>
-<div class="container">
+<div >
 <div class="row">
     <div class="col-4">
         <div class="h3 p-3">Ingredients</div>
@@ -37,7 +37,7 @@
             <li class="list-group-item"> {{drink.strIngredient10}} - {{drink.strMeasure10}}</li>
             {% endif %}
         </ul>
-        <div class="container">
+        <div >
             <div class="h3 p-3">Instructions</div>
             <p>{{drink.strInstructions}}</p>
         </div>
