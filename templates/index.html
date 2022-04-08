@@ -1,43 +1,58 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="margin-top: 2em">
-<label for="exampleDataList" class="form-label">search by name</label>
-    <form method="post" action="{{ url_for('searched_name')}}">
-        <input  list="datalistOptions" id="exampleDataList" type="text" name="search-name" />
-        <input type="submit" value="Search">
-        
-    </form>
-</div>
 
-<datalist id="datalistOptions">
-    <option value="Margarita">
-    <option value="Sex on the Beach">
-    <option value="Bloody Mary">
-    <option value="New York Sour">
-    <option value="Limeade">
-</datalist>
-<style>
-
-    .container {
-        background-image: url("../../static/drink2.jpg");
-        background-color: #cccccc;
-        height: 51.7em;
-        width: 100em;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-</style>
-
-{% endblock %}
-<!-- <h2>search by first letter</h2>
-        <form method="post" action="{{ url_for('searched_letter')}}">
-            <input type="text" name="search-letter" />
-            <input type="submit" value="Search">
-        </form>
-<h2>search by ingredient</h2>
-<form method="post" action="{{ url_for('searched_ingredient')}}">
-    <input type="text" name="search-ingredient" />
+<form class="navbar-form navbar-right" action="/search">
+    <input name="search-name" list="datalistOptions" id="exampleDataList" type="text"  placeholder="Search By Name..." id="search">
     <input type="submit" value="Search">
-</form> -->
+</form>
+
+{% if res %}
+<h1 class="display-3">Search Results</h1>
+<p class="lead">Search results for "{{ term }}"</p>
+{% if not g.user %}
+<a href="/users/login" class="btn btn-primary">Log in to start mixing...</a>
+{% else %}
+<a href="/users/{{ g.user.id }}" class="btn btn-primary">See your saved recipes</a>
+{% endif %}
+
+<div class="row text-center">
+    {% for drink in res %}
+    <div class="col-lg-2 col-md-4 mb-2">
+        <div class="card h-80">
+            <img class="card-img-top" src="{{ drink.strDrinkThumb }}" alt="">
+            <div class="card-body">
+                <h4 class="card-title">{{ drink.strDrink }}</h4>
+            </div>
+            <div class="card-footer">
+                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary">Add to fav</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="container" style="margin-top: 2em">
+    {% endif %}
+
+    <datalist id="datalistOptions">
+        <option value="Margarita">
+        <option value="Sex on the Beach">
+        <option value="Bloody Mary">
+        <option value="New York Sour">
+        <option value="Limeade">
+    </datalist>
+
+    <style>
+        .container {
+            background-image: url("../../static/drink2.jpg");
+            background-color: #cccccc;
+            height: 48em;
+            width: 100em;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+
+    {% endblock %}

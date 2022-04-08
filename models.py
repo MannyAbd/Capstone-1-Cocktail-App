@@ -108,7 +108,8 @@ class User(db.Model):
         else:
             return False
             
-            
+
+
 def connect_db(app):
     db.app = app
     db.init_app(app)

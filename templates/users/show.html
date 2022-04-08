@@ -1,64 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
-
-
-
-<h1 class="display-3">Hi, {{ user.username }}</h1>
-<p class="lead">Below you will be able to see your saved recipes, look at your recently viewed drinks and ingredients, and create your own recipes. </p>
-
-{% if saved_drinks %}
-<div class="container text-center">
-    <a class="h3" href="users/saved-drinks">Saved Drinks ({{ saved_drinks | length }})</a>
-</div>
-<div class="row text-center">
-    {% for drink in saved_drinks[0:4] %}
-    <div class="col-lg-3 col-md-6 mb-4 overflow-auto">
-        <div class="card h-100">
-            <div class="card-body">
-                <h4 class="card-title">{{drink.strDrink}}</h4>
-                <p class="card-text">{{drink.strInstructions}}</p>
-            </div>
-            <div class="card-footer">
-                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary m-2">Save the recipe!</a>
-                <button data-id="{{drink.idDrink}}" class="btn btn-danger saveDrink">Remove Save</button>
-            </div>
-        </div>
+<h1 class="text-center display-3">Hi, {{ user.username }}</h1>
+{% if adds %}
+<div >
+    <div class="card-body">
+        <h3>Here's your list of favs</h3>
+        {% for drink in adds[0:4] %}
+            <h4 class="card-title">{{ drink.strDrink }}</h4> 
+                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary">Check Out Recipe</a>
+                <form action="/users/{{drink.id}}/delete" method="POST">
+                <button class="btn btn-sm btn-danger " class="btn btn-secondary btn-sm" data-id="{{drink.idDrink}}">delete</button>
+                </form>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endif %}
 
-
-
-
-
-{% if recents %}
-<div class="container text-center">
-    <a class="h3" href="/users/recent">Your recently viewed drinks</a>
-</div>
-<div class="row text-center">
-    {% for drink in recents[0:4] %}
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card h-100">
-            <img class="card-img-top" src="{{ drink.strDrinkThumb }}" alt="">
-            <div class="card-body">
-                <h4 class="card-title">{{ drink.strDrink }}</h4>
-                <p class="card-text">{{ drink.strInstructions[0:150] + "..." }}</p>
-            </div>
-            <div class="card-footer">
-                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary">Find Out More!</a>
-            </div>
-        </div>
+<div class="row justify-content-center m-5">
+    <p>Look below to update your username or email address.</p>
+    <div class="col-md-7 col-lg-5">
+        <h2 class="join-message">Update Form:</h2>
+        <form method="POST" id="user_form">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.widget.input_type != 'hidden' %}
+            {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            {{ field(placeholder=field.label.text, class="form-control m-3") }}
+            {% endfor %}
+            <button class="btn btn-primary btn-block">Update</button>
+        </form>
     </div>
-    {% endfor %}
 </div>
-{% endif %}
-
-
-
-
-
-
-
-
 {% endblock %}
