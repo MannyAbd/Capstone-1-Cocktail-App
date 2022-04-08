@@ -13,12 +13,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Temp23333')
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///cocktail_db"
-# uri = os.getenv("DATABASE_URL")  # or other relevant config var
-# if uri.startswith("postgres://"):
-#     uri = uri.replace("postgres://", "postgresql://", 1)
-# rest of connection code using the connection string `uri`
-
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
 #     'DATABASE_URL', 'postgresql:///cocktail_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -170,7 +164,7 @@ def register_user():
             db.session.commit()
         except IntegrityError:
             form.username.errors.append('Username or email already in use.  Please pick another')
-            return render_template("register.html", form=form)
+            return render_template("/users/register.html", form=form)
         do_login(user)
         flash(f"Hello, {user.username}!", "success")
         return redirect("/")
