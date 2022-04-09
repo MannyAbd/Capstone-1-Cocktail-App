@@ -194,7 +194,7 @@ def logout_user():
     return redirect('/')
 ##############################User Route###############################
 
-@app.route('/users/<int:user_id>')
+@app.route('/users/<int:user_id>', methods=["GET", "POST"])
 def show_user_page(user_id):
     if not g.user:
         flash("Please login to view your page", "danger")
@@ -206,9 +206,12 @@ def show_user_page(user_id):
     form = UpdateUserForm(obj=user)
 
     if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        db.session.commit()
+        try:
+            user.username = form.username.data
+            user.email = form.email.data
+            db.session.commit()
+        except IntegrityError:
+            form.username.errors.append('Username or email already in use.  Please pick another')
         flash(f"User {user_id} updated", "success")
         return redirect(f'/users/{user.id}')
     return render_template('/users/show.html',user=user, adds=adds,recs=recs, form=form)
@@ -224,24 +227,7 @@ def remove_drink(drink_id):
     flash(f"Deleted {fav.name}")
     return redirect("/")
 
-@app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
-def update_user(user_id):
-    if not g.user:
-        flash("Please login first!", "danger")
-        return redirect("/")
 
-    user = User.query.get_or_404(user_id)
-    form = UpdateUserForm(obj=user)
-
-    if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        db.session.commit()
-        flash(f"User {user_id} updated", "success")
-        return redirect(f'/users/{user.id}')
-
-    else:
-        return render_template("/users/edit.html", form=form)
 
 # @app.route('/users/fav/delete')
 ##############################loggedIn Route###############################

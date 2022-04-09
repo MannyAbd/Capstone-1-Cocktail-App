@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired, Email, Length, InputRequired, Optional
+from wtforms.validators import DataRequired, Email, Length, InputRequired, Optional, ValidationError
 from wtforms.widgets import TextArea
 
 
@@ -10,6 +10,10 @@ class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+def validate_username(self, field):
+    if UserForm.query.filter_by(username=field.data).first():
+        raise ValidationError('Username already in use.')
 
 class LoginForm(FlaskForm):
     """Login form."""
