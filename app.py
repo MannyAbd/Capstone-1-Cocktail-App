@@ -213,7 +213,7 @@ def show_user_page(user_id):
         return redirect(f'/users/{user.id}')
     return render_template('/users/show.html',user=user, adds=adds,recs=recs, form=form)
 
-@app.route('/users/<int:drink_id>/delete', methods=["POST"])
+@app.route('/users/<int:user_id>/delete', methods=["POST"])
 def remove_drink(drink_id):
     if not g.user:
         flash("Please login first!", "danger")

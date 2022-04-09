@@ -1,18 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
+
+
 <h1 class="text-center display-3">Hi, {{ user.username }}</h1>
+<h6 class="text display-6">Here's your list of favs</h6>
 {% if adds %}
-<div >
-    <div class="card-body">
-        <h3>Here's your list of favs</h3>
-        {% for drink in adds[0:4] %}
-            <h4 class="card-title">{{ drink.strDrink }}</h4> 
-                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-primary">Check Out Recipe</a>
-                <form action="/users/{{drink.id}}/delete" method="POST">
-                <button class="btn btn-sm btn-danger " class="btn btn-secondary btn-sm" data-id="{{drink.idDrink}}">delete</button>
+<div class="row align-items-start">
+    <p></p>
+    <div class="row">
+    
+        {% for drink in adds %}
+        <div class="col">
+        <div class="card" style="width: 15rem;">
+        <img class="card-img-top" src="{{ drink.strDrinkThumb }}" alt="">
+            <div class="card-body">
+                <h4 class="card-title">{{ drink.strDrink }}</h4> 
+            </div>
+            <div class="card-footer">
+                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-outline-secondary">Check Out Recipe</a>
+                <form action="/users/{{user_id}}/delete" method="POST">
+                <button class="btn btn-sm btn-outline-danger " class="btn btn-secondary btn-sm" >delete</button>
                 </form>
-        {% endfor %}
+            </div>
+        </div>
     </div>
+        {% endfor %}
+    
+</div>
 </div>
 {% endif %}
 
