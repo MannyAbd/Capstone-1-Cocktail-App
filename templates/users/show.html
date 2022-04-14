@@ -2,34 +2,11 @@
 {% block content %}
 
 
-<h1 class="text-center display-3">Hi, {{ user.username }}</h1>
-<h6 class="text display-6">Here's your list of favs</h6>
-{% if adds %}
-<div class="row align-items-start">
-    <p></p>
-    <div class="row">
-    
-        {% for drink in adds %}
-        <div class="col">
-        <div class="card" style="width: 15rem;">
-        <img class="card-img-top" src="{{ drink.strDrinkThumb }}" alt="">
-            <div class="card-body">
-                <h4 class="card-title">{{ drink.strDrink }}</h4> 
-            </div>
-            <div class="card-footer">
-                <a href="/drinks/{{ drink.idDrink }}" class="btn btn-outline-secondary">Check Out Recipe</a>
-                <form action="/users/{{user_id}}/delete" method="POST">
-                <button class="btn btn-sm btn-outline-danger " class="btn btn-secondary btn-sm" >delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-        {% endfor %}
-    
-</div>
-</div>
-{% endif %}
 
+<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"
+    aria-controls="contact" aria-selected="false"><a class="nav-link" href="/users/{{ g.user.id }}/fav">{{
+        g.user.username
+        }}'s Drinks</a></button>
 <div class="row justify-content-center m-5">
     <p>Look below to update your username or email address.</p>
     <div class="col-md-7 col-lg-5">
@@ -46,4 +23,5 @@
         </form>
     </div>
 </div>
+
 {% endblock %}

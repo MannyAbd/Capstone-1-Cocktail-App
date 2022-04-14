@@ -39,7 +39,7 @@ def get_drink_id(idDrink):
         return None
 
 
-def handle_add_drink(user_id, drink_id):
+def handle_show_drink(user_id, drink_id):
     try:
         added = AddDrink(
             user_id=user_id, drink_id=drink_id)
@@ -60,19 +60,9 @@ def add_fav(user_id):
         # lst = [drink.id for drink in user.fav]
         lst = []
         for drink in fav:
-            resp = get_drink_id(drink.drink_id)
-            lst.insert(0, resp)
+            res = get_drink_id(drink.drink_id)
+            lst.insert(0, res)
         return lst
-        
-
-def generate_recs(added):
-    """Following cocktail-curator: Takes dicts from user page and finds recently added"""
-    lst = []
-    if added != None:
-        for i in added:
-            lst.append(i['strIngredient1'])
-    else:
-        return None
 
 ###############################SEARCH ROUTES################################
 
@@ -101,33 +91,32 @@ def homepage():
 @app.route('/search')
 def search():
     term = request.args["search-name"]
-
     res = get_name(term)
     return render_template('/search.html',term=term,res=res)
 
 
 ###########################SEARCH BY FIRST LETTER##########################
-alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']
+# alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','w','y','z']
 
-@app.route('/letters')
-def nav_letters():
-    return render_template('/drinks/nav_letters.html',alph=alph)
+# @app.route('/letters')
+# def nav_letters():
+#     return render_template('/drinks/nav_letters.html',alph=alph)
 
-@app.route('/letters/<l>')
-def drink_a(l):
-    res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': {l}})
-    val = res.json()
-    drinks = val["drinks"]
-    return render_template("/drinks/by_letter.html",drinks=drinks, alph=alph)
+# @app.route('/letters/<l>')
+# def drink_a(l):
+#     res = requests.get(f"{BASE_URL}", params={'api_key': api_key, 'f': {l}})
+#     val = res.json()
+#     drinks = val["drinks"]
+#     return render_template("/drinks/by_letter.html",drinks=drinks, alph=alph)
 
-@app.route('/searched/<type>',methods=['GET', 'POST'])
-def drink_up(type):
-    drink = type
-    res = requests.get(f'{BASE_URL}?s={drink}')
-    val = res.json()   
-    drinks = val["drinks"]
+# @app.route('/searched/<type>',methods=['GET', 'POST'])
+# def drink_up(type):
+#     drink = type
+#     res = requests.get(f'{BASE_URL}?s={drink}')
+#     val = res.json()   
+#     drinks = val["drinks"]
 
-    return render_template("/drinks/letter_drink.html", drinks=drinks,drink=drink)
+#     return render_template("/drinks/letter_drink.html", drinks=drinks,drink=drink)
 
 ##############################login/register###############################
 """Following Springboard tutorial"""
@@ -201,8 +190,8 @@ def show_user_page(user_id):
         return redirect("/")
 
     user = User.query.get_or_404(user_id)
+    drinks = Drink.query.filter(Drink.user).all()
     adds = add_fav(user_id)
-    recs = generate_recs(adds)
     form = UpdateUserForm(obj=user)
 
     if form.validate_on_submit():
@@ -214,39 +203,51 @@ def show_user_page(user_id):
             form.username.errors.append('Username or email already in use.  Please pick another')
         flash(f"User {user_id} updated", "success")
         return redirect(f'/users/{user.id}')
-    return render_template('/users/show.html',user=user, adds=adds,recs=recs, form=form)
+    return render_template('/users/show.html',user=user, adds=adds, form=form, drinks=drinks)
 
-@app.route('/users/<int:user_id>/delete', methods=["POST"])
+@app.route('/users/<int:drink_id>/delete', methods=["POST"])
 def remove_drink(drink_id):
     if not g.user:
         flash("Please login first!", "danger")
         return redirect("/")
+    
     fav = AddDrink.query.get_or_404(drink_id)
     db.session.delete(fav)
     db.session.commit()
-    flash(f"Deleted {fav.name}")
-    return redirect("/")
+    flash(f"Deleted {fav}")
+    return redirect('/')
 
-
-
-# @app.route('/users/fav/delete')
+@app.route('/users/<int:user_id>/fav/')
+def show_all_drink(user_id):
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
+    user = User.query.get_or_404(user_id)
+    org_drink = Drink.query.filter(Drink.user).all()
+    adds = add_fav(user_id)
+    return render_template("/users/fav.html", org_drink=org_drink,adds=adds,user=user)
 ##############################loggedIn Route###############################
 
-# @app.route("/drinks")
-# def show_all_drink():
+# @app.route("/user/original/drinks")
+# def show_all_org_drink():
 #     """Show list of drink."""
 #     if not g.user:
 #         flash("Please login first!", "danger")
 #         return redirect("/")
-#     drinks = Drink.query.filter(Drink.user).all()
-#     return render_template("/drinks/drinks.html", drinks=drinks)
+#     org_drink = Drink.query.filter(Drink.user).all()
+#     return render_template("/drinks/drinks.html", org_drink=org_drink)
+
+@app.route("/user/original/<int:org_id>")
+def show_org(org_id):
+    org_drink = Drink.query.get_or_404(org_id)
+    return render_template("/drinks/drink.html", org_drink=org_drink)
 
 # @app.route("/drinks/<int:drink_id>")
 # def show_drink(drink_id):
 #     if not g.user:
 #         flash("Please login first!", "danger")
 #         return redirect("/")
-#     handle_add_drink(g.user.id, drink_id)
+#     handle_show_drink(g.user.id, drink_id)
 #     drinks = get_drink_by_id(drink_id)
 #     drink = Drink.query.get_or_404(drink_id)
 #     return render_template("/drinks/drink.html", drink=drink, drinks=drinks)
@@ -256,65 +257,67 @@ def show_drink_page(drink_id):
     if not g.user:
         flash("Please login first!", "danger")
         return redirect("/")
-    handle_add_drink(g.user.id, drink_id)
+    handle_show_drink(g.user.id, drink_id)
     user = User.query.get_or_404(g.user.id)
     drink = get_drink_id(drink_id)
     return render_template('/drinks/show.html',user=user,drink=drink)
     
-# @app.route("/drinks/add", methods=["GET", "POST"])
-# def add_drink():
+@app.route("/drinks/add-drink", methods=["GET", "POST"])
+def add_drink():
 
-#     form = DrinkForm()
-#     if not g.user:
-#         flash("Please login first!", "danger")
-#         return redirect("/")
+    form = DrinkForm()
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
 
-#     if form.validate_on_submit():
-#         name = form.name.data
-#         instructions = form.instructions.data
-#         ingredient1 = form.ingredient1.data
-#         ingredient2 = form.ingredient2.data
-#         ingredient3 = form.ingredient3.data
-#         ingredient4 = form.ingredient4.data
-#         ingredient5 = form.ingredient5.data
-#         ingredient6 = form.ingredient6.data
-#         ingredient7 = form.ingredient7.data
-#         ingredient8 = form.ingredient8.data
-#         ingredient9 = form.ingredient9.data
-#         ingredient10 = form.ingredient10.data
+    if form.validate_on_submit():
+        name = form.name.data
+        instructions = form.instructions.data
+        ingredient1 = form.ingredient1.data
+        ingredient2 = form.ingredient2.data
+        ingredient3 = form.ingredient3.data
+        ingredient4 = form.ingredient4.data
+        ingredient5 = form.ingredient5.data
+        ingredient6 = form.ingredient6.data
+        ingredient7 = form.ingredient7.data
+        ingredient8 = form.ingredient8.data
+        ingredient9 = form.ingredient9.data
+        ingredient10 = form.ingredient10.data
 
-#         drink = Drink(name=name, instructions=instructions, ingredient1 = ingredient1,
-#         ingredient2 = ingredient2,
-#         ingredient3 = ingredient3,
-#         ingredient4 = ingredient4,
-#         ingredient5 = ingredient5,
-#         ingredient6 = ingredient6,
-#         ingredient7 = ingredient7,
-#         ingredient8 = ingredient8,
-#         ingredient9 = ingredient9,
-#         ingredient10 = ingredient10,
-#         user_id=g.user.id)
+        drink = Drink(name=name, instructions=instructions, ingredient1 = ingredient1,
+        ingredient2 = ingredient2,
+        ingredient3 = ingredient3,
+        ingredient4 = ingredient4,
+        ingredient5 = ingredient5,
+        ingredient6 = ingredient6,
+        ingredient7 = ingredient7,
+        ingredient8 = ingredient8,
+        ingredient9 = ingredient9,
+        ingredient10 = ingredient10,
+        user_id=g.user.id)
 
-#         db.session.add(drink)
-#         db.session.commit()
-#         flash(f"Added '{name}'")
-#         return redirect('/drinks')
-#     else:
-#         return render_template("/drinks/add_drink.html", form=form)
+        db.session.add(drink)
+        db.session.commit()
+        flash(f"Added '{name}'")
+        return redirect('/')
+    else:
+        return render_template("/drinks/add_drink.html", form=form)
 
-# @app.route('/drinks/<int:drink_id>/delete', methods=["POST"])
-# def remove_drink(drink_id):
-#     if not g.user:
-#         flash("Please login first!", "danger")
-#         return redirect("/")
-#     drink = Drink.query.get_or_404(drink_id)
+@app.route('/drinks/<int:drink_id>/delete', methods=["POST"])
+def removee_drink(drink_id):
+    if not g.user:
+        flash("Please login first!", "danger")
+        return redirect("/")
+    drink = Drink.query.get_or_404(drink_id)
     
-#     db.session.delete(drink)
-#     db.session.commit()
-#     flash(f"Deleted {drink.name}")
-#     return redirect("/drinks")
+    db.session.delete(drink)
+    db.session.commit()
+    flash(f"Deleted {drink.name}")
+    return redirect("/")
+
 
 ###############################JSON################################
+
 @app.route('/api/drinks')
 def list_drinks():
     all_drinks = [drink.serialize() for drink in Drink.query.all()]

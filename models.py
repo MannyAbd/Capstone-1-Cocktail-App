@@ -51,7 +51,7 @@ class Drink(db.Model):
 class AddDrink(db.Model):
   
     __tablename__ = 'add_drinks'
-
+    
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id", ondelete="CASCADE"),
@@ -59,8 +59,8 @@ class AddDrink(db.Model):
     )
 
     drink_id = db.Column(
-        db.Integer,
-        primary_key=True
+        db.Integer
+        
     )
 
 class User(db.Model):
